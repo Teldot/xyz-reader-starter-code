@@ -8,4 +8,9 @@
     <dimen name="fab_press_translation_z">6dp</dimen>
     <dimen name="fab_margin">24dp</dimen>
 
+    <!--LIST_ITEM_ARTICLE.XML-->
+    <!--DynamicHeightNetworkImageView-->
+    <!--<dimen name="image_layout_width"></dimen>-->
+    <dimen name="image_margin">16dp</dimen>
+    <dimen name="image_padding">8dp</dimen>
 </resources>
