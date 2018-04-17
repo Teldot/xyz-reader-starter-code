@@ -186,7 +186,7 @@ public class ArticleDetailFragment extends Fragment implements
 
     private Date parsePublishedDate() {
         try {
-            String date = mCursor.getString(ArticleLoader.Query.PUBLISHED_DATE);
+            String date = mCursor.getString(ArticleLoader.AllItemsQuery.PUBLISHED_DATE);
             return dateFormat.parse(date);
         } catch (ParseException ex) {
             Log.e(TAG, ex.getMessage());
@@ -212,7 +212,7 @@ public class ArticleDetailFragment extends Fragment implements
             mRootView.setAlpha(0);
             mRootView.setVisibility(View.VISIBLE);
             mRootView.animate().alpha(1);
-            titleView.setText(mCursor.getString(ArticleLoader.Query.TITLE));
+            titleView.setText(mCursor.getString(ArticleLoader.AllItemsQuery.TITLE));
             Date publishedDate = parsePublishedDate();
             if (!publishedDate.before(START_OF_EPOCH.getTime())) {
                 bylineView.setText(Html.fromHtml(
@@ -221,20 +221,20 @@ public class ArticleDetailFragment extends Fragment implements
                                 System.currentTimeMillis(), DateUtils.HOUR_IN_MILLIS,
                                 DateUtils.FORMAT_ABBREV_ALL).toString()
                                 + " by <font color='#ffffff'>"
-                                + mCursor.getString(ArticleLoader.Query.AUTHOR)
+                                + mCursor.getString(ArticleLoader.AllItemsQuery.AUTHOR)
                                 + "</font>"));
 
             } else {
                 // If date is before 1902, just show the string
                 bylineView.setText(Html.fromHtml(
                         outputFormat.format(publishedDate) + " by <font color='#ffffff'>"
-                        + mCursor.getString(ArticleLoader.Query.AUTHOR)
+                        + mCursor.getString(ArticleLoader.AllItemsQuery.AUTHOR)
                                 + "</font>"));
 
             }
-            bodyView.setText(Html.fromHtml(mCursor.getString(ArticleLoader.Query.BODY).replaceAll("(\r\n|\n)", "<br />")));
+            bodyView.setText(Html.fromHtml(mCursor.getString(ArticleLoader.AllItemsQuery.BODY).replaceAll("(\r\n|\n)", "<br />")));
             ImageLoaderHelper.getInstance(getActivity()).getImageLoader()
-                    .get(mCursor.getString(ArticleLoader.Query.PHOTO_URL), new ImageLoader.ImageListener() {
+                    .get(mCursor.getString(ArticleLoader.AllItemsQuery.PHOTO_URL), new ImageLoader.ImageListener() {
                         @Override
                         public void onResponse(ImageLoader.ImageContainer imageContainer, boolean b) {
                             Bitmap bitmap = imageContainer.getBitmap();

@@ -9,7 +9,7 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -38,7 +38,7 @@ import java.util.GregorianCalendar;
  * touched, lead to a {@link ArticleDetailActivity} representing item details. On tablets, the
  * activity presents a grid of items as cards.
  */
-public class ArticleListActivity extends ActionBarActivity implements
+public class ArticleListActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String TAG = ArticleListActivity.class.toString();
@@ -63,6 +63,15 @@ public class ArticleListActivity extends ActionBarActivity implements
         final View toolbarContainerView = findViewById(R.id.toolbar_container);
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+        //mSwipeRefreshLayout.setColorSchemeResources(R.color.green, R.color.red, R.color.yellow);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                //Your refresh code here
+                refresh();
+            }
+        });
+
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         getLoaderManager().initLoader(0, null, this);
@@ -107,7 +116,9 @@ public class ArticleListActivity extends ActionBarActivity implements
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        return ArticleLoader.newAllArticlesInstance(this);
+        //Load only columns to show
+//        return ArticleLoader.newAllArticlesInstance(this);
+        return ArticleLoader.newListItemsInstance(this);
     }
 
     @Override
@@ -136,7 +147,7 @@ public class ArticleListActivity extends ActionBarActivity implements
         @Override
         public long getItemId(int position) {
             mCursor.moveToPosition(position);
-            return mCursor.getLong(ArticleLoader.Query._ID);
+            return mCursor.getLong(ArticleLoader.ListItemsQuery._ID);
         }
 
         @Override
@@ -155,7 +166,7 @@ public class ArticleListActivity extends ActionBarActivity implements
 
         private Date parsePublishedDate() {
             try {
-                String date = mCursor.getString(ArticleLoader.Query.PUBLISHED_DATE);
+                String date = mCursor.getString(ArticleLoader.ListItemsQuery.PUBLISHED_DATE);
                 return dateFormat.parse(date);
             } catch (ParseException ex) {
                 Log.e(TAG, ex.getMessage());
@@ -167,7 +178,7 @@ public class ArticleListActivity extends ActionBarActivity implements
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
             mCursor.moveToPosition(position);
-            holder.titleView.setText(mCursor.getString(ArticleLoader.Query.TITLE));
+            holder.titleView.setText(mCursor.getString(ArticleLoader.ListItemsQuery.TITLE));
             Date publishedDate = parsePublishedDate();
             if (!publishedDate.before(START_OF_EPOCH.getTime())) {
 
@@ -177,17 +188,17 @@ public class ArticleListActivity extends ActionBarActivity implements
                                 System.currentTimeMillis(), DateUtils.HOUR_IN_MILLIS,
                                 DateUtils.FORMAT_ABBREV_ALL).toString()
                                 + "<br/>" + " by "
-                                + mCursor.getString(ArticleLoader.Query.AUTHOR)));
+                                + mCursor.getString(ArticleLoader.ListItemsQuery.AUTHOR)));
             } else {
                 holder.subtitleView.setText(Html.fromHtml(
                         outputFormat.format(publishedDate)
                         + "<br/>" + " by "
-                        + mCursor.getString(ArticleLoader.Query.AUTHOR)));
+                        + mCursor.getString(ArticleLoader.ListItemsQuery.AUTHOR)));
             }
             holder.thumbnailView.setImageUrl(
-                    mCursor.getString(ArticleLoader.Query.THUMB_URL),
+                    mCursor.getString(ArticleLoader.ListItemsQuery.THUMB_URL),
                     ImageLoaderHelper.getInstance(ArticleListActivity.this).getImageLoader());
-            holder.thumbnailView.setAspectRatio(mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
+            holder.thumbnailView.setAspectRatio(mCursor.getFloat(ArticleLoader.ListItemsQuery.ASPECT_RATIO));
         }
 
         @Override
